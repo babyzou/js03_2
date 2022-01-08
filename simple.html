@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Firebase_version9_RealtimeDB(G'sACADEMY初学者用サンプル)</title>
+<link rel="stylesheet" href="sample.css">
+<script src="https://kit.fontawesome.com/12c2f5186e.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- コンテンツ表示画面 -->
+
+<div class="visible">
+    <p class="midasi">LINE風味（超薄口）</p>
+    <div id="output" 
+    style="overflow: auto; height: 300px;padding: 20px 10px;
+    
+    text-align: right;
+    font-size: 14px;
+    background: #7da4cd";>
+    </div>
+    <div> 名前：<input type="text" id="uname"> 
+    </div>
+    <div class="input"> 
+        <textarea id="text" cols="50"></textarea>
+        <div class="icon">
+        <button id="send"><i class="fas fa-rocket"></i></i></button>
+        <button id="all_clear"><i class="fas fa-trash-alt"></i></button>
+    </div>
+    </div>
+</div>
+
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved } 
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD2sdfwzHSTgJZvib7XLncT0UHEY6nEh0o",
+        authDomain: "chat-5fcb7.firebaseapp.com",
+        projectId: "chat-5fcb7",
+        storageBucket: "chat-5fcb7.appspot.com",
+        messagingSenderId: "1099037142327",
+        appId: "1:1099037142327:web:16274f54cd77b64b0c3eb2"
+    };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);//RealtimeDBに接続
+    const dbRef = ref(db,"chat");//どのデータベースを参照するか
+
+    $("#send").on("click", function(){
+    //const msg = {
+       // const uname = $("#uname").val();
+        //const text = $("#text").val();
+        const msg ={
+            uname: $("#uname").val(),
+            text: $("#text").val()
+        }
+        const newPostRef = push(dbRef);//データを一意なもの（
+        set(newPostRef, msg)//データを保存
+    });
+
+    //入力した際にスクロールバーを最下層に移動する
+    $("#send").on("click", function scrollToEnd() {
+    const messagesArea = document.getElementById("output");
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+    console.log("output")
+    })
+
+    onChildAdded(dbRef, function(date){
+        const msg = date.val();
+        const key = date.key;
+        const str=`
+        <div class="balloon_r">
+            <p>${msg.uname}
+                <div class="says">
+                ${msg.text}
+                </div>
+            </p>
+        </div>`
+        //let h = '<p>'
+        //h += msg.uname;
+        //h += '<br>';
+        //h += msg.text;
+        //h += '</p>';
+        $("#output").append(str); //#outputの最後に追加
+
+        //`<button  id="${key}" class="delete">削除</button>`
+    });
+    
+    $("#text").on("keydown", function(event){
+    console.log(event.keyCode);
+    if (event.keyCode == 13){
+        const msg ={
+            uname: $("#uname").val(),
+            text: $("#text").val()
+        }
+        const newPostRef = push(dbRef);//データを一意なもの（
+        set(newPostRef, msg)//データを保存
+        console.log("send_massege");
+    }
+    //else{
+        //alert("メッセージが送信できていません")
+        //console.log("それ以外")
+    //}
+    });
+
+    //データ全削除
+    $("#all_clear").on("click", function() {
+        remove(dbRef)
+        $("#output").remove();
+        alert("データベースからは消えても思い出は消えません")
+    });
+        
+    //データ削除
+    $().on("click", function(){
+        let value = $(this).attr("id")
+        console.log(value)
+        remove(ref(db,"chat/"+ value))
+        $(this).parent().remove()
+        //import { doc, deleteDoc } from "chat";
+        //await deleteDoc(doc(db, "uname", "text"));
+        //alert('削除しました！');
+});
+
+    //firebase firestore:delete [options] <<path>>
+    //追加されたら一番下までスクロールする。
+//base64
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
